@@ -32,7 +32,7 @@ public class SnowflakeIDGenImpl implements IDGen {
     private static final Random RANDOM = new Random();
 
     public SnowflakeIDGenImpl(String zkAddress, int port) {
-        //Thu Nov 04 2010 09:42:54 GMT+0800 (中国标准时间) 
+        // Thu Nov 04 2010 09:42:54 GMT+0800 (中国标准时间)
         this(zkAddress, port, 1288834974657L);
     }
 
@@ -60,6 +60,9 @@ public class SnowflakeIDGenImpl implements IDGen {
     @Override
     public synchronized Result get(String key) {
         long timestamp = timeGen();
+
+        // 时间回拨
+
         if (timestamp < lastTimestamp) {
             long offset = lastTimestamp - timestamp;
             if (offset <= 5) {
@@ -85,7 +88,10 @@ public class SnowflakeIDGenImpl implements IDGen {
                 timestamp = tilNextMillis(lastTimestamp);
             }
         } else {
-            //如果是新的ms开始
+            // 如果是新的ms开始
+
+            // 为什么不从0开始？
+
             sequence = RANDOM.nextInt(100);
         }
         lastTimestamp = timestamp;
@@ -95,6 +101,9 @@ public class SnowflakeIDGenImpl implements IDGen {
     }
 
     protected long tilNextMillis(long lastTimestamp) {
+
+        // 循环，等到下一毫秒
+
         long timestamp = timeGen();
         while (timestamp <= lastTimestamp) {
             timestamp = timeGen();
